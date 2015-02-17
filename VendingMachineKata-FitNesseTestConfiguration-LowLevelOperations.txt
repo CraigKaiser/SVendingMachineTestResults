@@ -1,0 +1,121 @@
+!define TEST_SYSTEM {slim}
+!define COMMAND_PATTERN {%m -r fitSharp.Slim.Service.Runner,FitSharp\fitSharp.dll %p}
+!define TEST_RUNNER {FitSharp\Runner.exe}
+
+!path C:\!Fs\Code\SVendingMachine\PVendingMachine\bin\Debug\VendingMachine.dll
+
+!|import       |
+|VendingMachine|
+
+!2 Feature: Select Product
+
+!|Script|Operate Vending Machine     |
+|Check  |Display Message|INSERT COINS|
+|Reject |Select Product |Candy       |
+|Check  |Display Message|PRICE $0.65 |
+|Check  |Display Message|INSERT COINS|
+|Reject |Select Product |Chips       |
+|Check  |Display Message|PRICE $0.50 |
+|Check  |Display Message|INSERT COINS|
+|Reject |Select Product |Cola        |
+|Check  |Display Message|PRICE $1.00 |
+|Check  |Display Message|INSERT COINS|
+|Ensure |Insert Coin    |Quarter     |
+|Check  |Display Message|$0.25       |
+|Ensure |Insert Coin    |Quarter     |
+|Ensure |Insert Coin    |Dime        |
+|Ensure |Insert Coin    |Nickel      |
+|Check  |Display Message|$0.65       |
+|Ensure |Select Product |Candy       |
+|Check  |Display Message|THANK YOU   |
+|Check  |Current Amount |0           |
+|Check  |Display Message|INSERT COINS|
+|Ensure |Insert Coin    |Quarter     |
+|Ensure |Insert Coin    |Quarter     |
+|Check  |Display Message|$0.50       |
+|Ensure |Select Product |Chips       |
+|Check  |Display Message|THANK YOU   |
+|Check  |Current Amount |0           |
+|Check  |Display Message|INSERT COINS|
+|Ensure |Insert Coin    |Quarter     |
+|Ensure |Insert Coin    |Quarter     |
+|Ensure |Insert Coin    |Quarter     |
+|Ensure |Insert Coin    |Quarter     |
+|Check  |Display Message|$1.00       |
+|Ensure |Select Product |Cola        |
+|Check  |Display Message|THANK YOU   |
+|Check  |Current Amount |0           |
+|Check  |Display Message|INSERT COINS|
+
+!2 Feature: Make Change
+
+!|Script|Operate Vending Machine        |
+|Check  |Display Message   |INSERT COINS|
+|Ensure |Insert Coin       |Quarter     |
+|Ensure |Insert Coin       |Quarter     |
+|Ensure |Insert Coin       |Quarter     |
+|Check  |Display Message   |$0.75       |
+|Ensure |Select Product    |Candy       |
+|Check  |Display Message   |THANK YOU   |
+|Check  |Display Message   |INSERT COINS|
+|Check  |LastReturnedAmount|0.10        |
+|Check  |LastReturnedAmount|0           |
+|Ensure |Insert Coin       |Quarter     |
+|Ensure |Insert Coin       |Quarter     |
+|Ensure |Insert Coin       |Quarter     |
+|Check  |Display Message   |$0.75       |
+|Ensure |Select Product    |Chips       |
+|Check  |Display Message   |THANK YOU   |
+|Check  |Display Message   |INSERT COINS|
+|Check  |LastReturnedAmount|0.25        |
+|Ensure |Insert Coin       |Quarter     |
+|Ensure |Insert Coin       |Quarter     |
+|Ensure |Insert Coin       |Quarter     |
+|Ensure |Insert Coin       |Dime        |
+|Ensure |Insert Coin       |Dime        |
+|Ensure |Insert Coin       |Dime        |
+|Check  |Display Message   |$1.05       |
+|Ensure |Select Product    |Cola        |
+|Check  |Display Message   |THANK YOU   |
+|Check  |Display Message   |INSERT COINS|
+|Check  |LastReturnedAmount|0.05        |
+
+!2 Feature: Return Coins
+
+!|Script|Operate Vending Machine        |
+|Check  |Display Message   |INSERT COINS|
+|Ensure |Insert Coin       |Quarter     |
+|Check  |Display Message   |$0.25       |
+|Ensure |Return Current Amount          |
+|Check  |Display Message   |INSERT COINS|
+|Check  |LastReturnedAmount|0.25        |
+
+!2 Feature: Sold Out
+
+!|Script|Operate Vending Machine     |
+|Check  |Display Message|INSERT COINS|
+|Reject |Select Product |Chips       |
+|Check  |Display Message|PRICE $0.50 |
+|Check  |Display Message|INSERT COINS|
+|Ensure |Insert Coin    |Quarter     |
+|Ensure |Insert Coin    |Quarter     |
+|Check  |Display Message|$0.50       |
+|Ensure |Select Product |Chips       |
+|Check  |Display Message|THANK YOU   |
+|Check  |Display Message|INSERT COINS|
+|Check  |Current Amount |0           |
+|Reject |Select Product |Chips       |
+|Check  |Display Message|SOLD OUT    |
+|Check  |Display Message|INSERT COINS|
+|Ensure |Insert Coin    |Quarter     |
+|Ensure |Insert Coin    |Quarter     |
+|Check  |Display Message|$0.50       |
+|Reject |Select Product |Chips       |
+|Check  |Display Message|SOLD OUT    |
+|Check  |Display Message|$0.50       |
+
+!2 Feature: Exact Change Only
+!|Script|Operate Vending Machine          |
+|Check  |Display Message|INSERT COINS     |
+|Ensure |EmptyCoinChanger                 |
+|Check  |Display Message|EXACT CHANGE ONLY|
